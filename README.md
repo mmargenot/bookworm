@@ -1,0 +1,2 @@
+# bookworm
+Local deep research
