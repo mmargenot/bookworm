@@ -8,7 +8,7 @@ Similar to RAPTOR, and runs until we have the desired number of entry clusters.
 """
 
 from abc import ABC, abstractmethod
-from bookworm.types import Cluster, Document, Embedding
+from bookworm.types import Cluster, Embedding
 
 
 class InsightModel(ABC):
@@ -19,9 +19,7 @@ class InsightModel(ABC):
 
 class ClusteringMethod(ABC):
     @abstractmethod
-    def cluster(
-        self, items: list[tuple[Document, Embedding]]
-    ) -> list[Cluster]:
+    def cluster(self, items: list[Embedding]) -> list[Cluster]:
         pass
 
     @classmethod

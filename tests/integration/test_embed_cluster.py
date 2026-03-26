@@ -2,7 +2,10 @@ import pytest
 
 from bookworm.types import Document, Embedding, EmbeddingType, Source
 from bookworm.embedding import BGEM3Embedder
-from bookworm.cluster_method import KMeansClustering
+from bookworm.cluster_method import (
+    KMeansClustering,
+    DBSCANClustering,
+)
 
 
 JABBERWOCKY = [
@@ -46,7 +49,7 @@ def embedded_documents(embedder, documents):
             type=EmbeddingType.TEXT,
             embedding=emb,
         )
-        items.append((doc, embedding))
+        items.append(embedding)
     return items
 
 
@@ -61,7 +64,7 @@ class TestEmbedThenCluster:
         k = 3
         clusterer = KMeansClustering(k=k)
         clusters = clusterer.cluster(embedded_documents)
-        all_doc_ids = {doc.id for doc, _ in embedded_documents}
+        all_doc_ids = {e.source_id for e in embedded_documents}
         clustered_doc_ids = {
             doc_id for cluster in clusters for doc_id in cluster.document_ids
         }
@@ -70,6 +73,28 @@ class TestEmbedThenCluster:
     def test_no_empty_clusters(self, embedded_documents):
         k = 3
         clusterer = KMeansClustering(k=k)
+        clusters = clusterer.cluster(embedded_documents)
+        for cluster in clusters:
+            assert len(cluster.document_ids) > 0
+
+
+class TestEmbedThenDBSCAN:
+    def test_all_documents_assigned(self, embedded_documents):
+        clusterer = DBSCANClustering(eps=0.5, min_samples=2, metric="cosine")
+        clusters = clusterer.cluster(embedded_documents)
+        all_doc_ids = {e.source_id for e in embedded_documents}
+        clustered_doc_ids = {
+            doc_id for cluster in clusters for doc_id in cluster.document_ids
+        }
+        assert clustered_doc_ids == all_doc_ids
+
+    def test_produces_at_least_one_cluster(self, embedded_documents):
+        clusterer = DBSCANClustering(eps=0.5, min_samples=2, metric="cosine")
+        clusters = clusterer.cluster(embedded_documents)
+        assert len(clusters) >= 1
+
+    def test_no_empty_clusters(self, embedded_documents):
+        clusterer = DBSCANClustering(eps=0.5, min_samples=2, metric="cosine")
         clusters = clusterer.cluster(embedded_documents)
         for cluster in clusters:
             assert len(cluster.document_ids) > 0
