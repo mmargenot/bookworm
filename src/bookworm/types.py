@@ -18,6 +18,7 @@ class Document(BaseModel):
     """
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex)
+    parent_id: str | None = None
     name: str
     source: Source
     content: str
