@@ -33,7 +33,7 @@ embedding_image = (
     .add_local_python_source("bookworm")
 )
 
-completion_image = (
+llm_image = (
     modal.Image.from_registry(
         "nvidia/cuda:12.8.0-devel-ubuntu22.04",
         add_python="3.12",
@@ -85,7 +85,7 @@ class ModalEmbeddingService:
 
 
 @app.cls(
-    image=completion_image,
+    image=llm_image,
     gpu=LLM_GPU,
     secrets=[bookworm_secret],
     volumes={"/root/.cache/huggingface": model_cache},
