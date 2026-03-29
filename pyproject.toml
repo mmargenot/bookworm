@@ -1,7 +1,7 @@
 [project]
 name = "bookworm"
 version = "0.1.0"
-description = "Add your description here"
+description = "Research agent for interpreting unstructured data."
 readme = "README.md"
 authors = [
     { name = "Maxwell Margenot", email = "max.margenot@gmail.com" }
@@ -29,6 +29,9 @@ dev = [
     "pytest>=9.0.2",
     "ruff>=0.15.7",
     "ty>=0.0.24",
+]
+remote = [
+    "modal>=1.4.0",
 ]
 
 [tool.ruff]
